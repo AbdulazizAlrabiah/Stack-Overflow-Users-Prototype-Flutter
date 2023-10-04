@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:stack_overflow_users_prototype_flutter/model/db/user_manager.dart';
 import 'package:stack_overflow_users_prototype_flutter/model/response/user_response.dart';
 import 'package:stack_overflow_users_prototype_flutter/networking/networking.dart';
 import 'package:stack_overflow_users_prototype_flutter/networking/networking_generic_response.dart';
+import 'package:stack_overflow_users_prototype_flutter/shared_utilities/shared_logger.dart';
 
 class UsersViewModel with ChangeNotifier {
   NetworkingGenericResponse<UsersResponse>? _usersResponse;
   NetworkingGenericResponse<UsersResponse>? get usersResponse => _usersResponse;
   // Data source for the list view
   List<UserData> users = [];
+
+  bool isBookmarkMode = false;
 
   // Pagination
   int pageSize = 30;
@@ -21,6 +25,12 @@ class UsersViewModel with ChangeNotifier {
   Future<void> getUsers({
     required int pageNumber,
   }) async {
+    if (isBookmarkMode) {
+      _usersResponse = NetworkingGenericResponse.normal();
+      return;
+    }
+    SharedLogger.shared.i("Will get users for page $pageNumber");
+
     final response = await Networking.shared.makeRequest(
       "/users",
       params: {
@@ -34,6 +44,8 @@ class UsersViewModel with ChangeNotifier {
       _usersResponse = NetworkingGenericResponse.completed(
         UsersResponse.fromJson(response.data),
       );
+
+      await checkIfBookmarkedAndSet(_usersResponse?.data?.items ?? []);
 
       if (pageNumber == 1) {
         users = _usersResponse?.data?.items ?? [];
@@ -70,5 +82,47 @@ class UsersViewModel with ChangeNotifier {
       await getUsers(pageNumber: nextPageNumber);
       isLoadingPaignation = false;
     }
+  }
+
+  Future<void> toggleBookmarkedUsersMode() async {
+    isBookmarkMode = !isBookmarkMode;
+    if (isBookmarkMode) {
+      users = await UserManager.shared.users();
+    } else {
+      await getUsersWithLoader();
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> toggleBookMarkUser(UserData user) async {
+    if (await isBookMarkedUser(user)) {
+      SharedLogger.shared.i("Will delete $user from bookmarks");
+      await UserManager.shared.deleteUser(user.accountId);
+      if (isBookmarkMode) {
+        users.remove(user);
+      } else {
+        user.isBookmarked = false;
+      }
+    } else {
+      SharedLogger.shared.i("Will insert $user in bookmarks");
+      await UserManager.shared.insertUser(user);
+      user.isBookmarked = true;
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> checkIfBookmarkedAndSet(List<UserData> users) async {
+    for (final user in users) {
+      user.isBookmarked = await isBookMarkedUser(user);
+    }
+
+    notifyListeners();
+  }
+
+  Future<bool> isBookMarkedUser(UserData user) async {
+    final userFromDB = await UserManager.shared.user(user.accountId);
+    return userFromDB != null;
   }
 }

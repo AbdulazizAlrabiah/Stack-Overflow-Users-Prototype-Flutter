@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stack_overflow_users_prototype_flutter/model/db/database_manager.dart';
 import 'package:stack_overflow_users_prototype_flutter/vvm/home/users_screen.dart';
 import 'package:stack_overflow_users_prototype_flutter/vvm/home/users_view_model.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Will not await for better performance
+  DatabaseManager.shared.openDB();
   runApp(const MyApp());
 }
 

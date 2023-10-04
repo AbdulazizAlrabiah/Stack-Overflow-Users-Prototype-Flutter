@@ -69,6 +69,18 @@ class _UsersScreenState extends State<UsersScreen> {
               backgroundColor: Colors.grey,
               title: const Text("SOF Users"),
             ),
+            floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+            floatingActionButton: FloatingActionButton(
+              onPressed: () async {
+                await viewModel.toggleBookmarkedUsersMode();
+              },
+              backgroundColor: Colors.lightBlue,
+              child: Icon(
+                viewModel.isBookmarkMode
+                    ? Icons.bookmark_border
+                    : Icons.bookmark,
+              ),
+            ),
             body: Column(
               children: [
                 Expanded(
@@ -125,7 +137,7 @@ class UsersList extends StatelessWidget {
           onTap: (() {
             Navigator.of(context).pushNamed(
               RouteName.detailRouteName,
-              arguments: user.id,
+              arguments: user.userId,
             );
           }),
           child: Card(
@@ -210,9 +222,13 @@ class UsersList extends StatelessWidget {
                         radius: 16,
                         backgroundColor: Colors.grey.shade200,
                         child: IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            _viewModel.toggleBookMarkUser(user);
+                          },
                           icon: Icon(
-                            Icons.bookmark_add_outlined,
+                            user.isBookmarked
+                                ? Icons.bookmark
+                                : Icons.bookmark_add_outlined,
                             size: 16,
                             color: Colors.lightBlue,
                           ),
