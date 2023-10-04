@@ -14,13 +14,9 @@ class UsersViewModel with ChangeNotifier {
   bool isBookmarkMode = false;
 
   // Pagination
-  int pageSize = 30;
+  final pageSize = 30;
   int get nextPageNumber => (users.length / pageSize).ceil() + 1;
   bool isLoadingPaignation = false;
-
-  UsersViewModel() {
-    getUsersWithLoader();
-  }
 
   Future<void> getUsers({
     required int pageNumber,

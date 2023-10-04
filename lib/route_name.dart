@@ -1,3 +1,3 @@
 class RouteName {
-  static const detailRouteName = '/detail';
+  static const userDetailRouteName = '/detail';
 }

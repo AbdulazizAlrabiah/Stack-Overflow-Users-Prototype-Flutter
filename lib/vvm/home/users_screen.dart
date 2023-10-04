@@ -21,6 +21,10 @@ class _UsersScreenState extends State<UsersScreen> {
   void initState() {
     final viewModel = context.read<UsersViewModel>();
 
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      viewModel.getUsersWithLoader();
+    });
+
     _scrollController.addListener(() {
       if (_scrollController.position.maxScrollExtent ==
           _scrollController.position.pixels) {
@@ -136,8 +140,11 @@ class UsersList extends StatelessWidget {
         return GestureDetector(
           onTap: (() {
             Navigator.of(context).pushNamed(
-              RouteName.detailRouteName,
-              arguments: user.userId,
+              RouteName.userDetailRouteName,
+              arguments: {
+                "user_id": user.userId,
+                "name": user.name,
+              },
             );
           }),
           child: Card(
