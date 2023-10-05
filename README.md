@@ -1,16 +1,7 @@
-# stack_overflow_users_prototype_flutter
+# Stack-Overflow-Users-Prototype-Flutter
 
-A new Flutter project.
+Stack-Overflow-Users-Prototype-Flutter is a flutter app that fetches users from Stack Exchange from their website(APIs), then the app displays their information in 2 views (Main view and a detail view). 
 
-## Getting Started
+Also, it has a feature where you can bookmark some users and view them only (Saved in local DB).
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+implemented using Flutter.
